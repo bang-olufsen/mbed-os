@@ -746,12 +746,17 @@ public:
     {
         void *p = equeue_alloc(&_equeue, sizeof(F));
         if (!p) {
+	        queue_full(QUEUE_FULL_CALL, sizeof(F));
             return 0;
         }
 
         F *e = new (p) F(f);
         equeue_event_dtor(e, &EventQueue::function_dtor<F>);
-        return equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        int id = equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        if (id == 0) {
+            queue_full(QUEUE_FULL_CALL, sizeof(F));
+        }
+        return id;
     }
 
 
@@ -821,13 +826,18 @@ public:
     {
         void *p = equeue_alloc(&_equeue, sizeof(F));
         if (!p) {
+	        queue_full(QUEUE_FULL_CALL_IN, sizeof(F));
             return 0;
         }
 
         F *e = new (p) F(f);
         equeue_event_delay(e, ms);
         equeue_event_dtor(e, &EventQueue::function_dtor<F>);
-        return equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        int id = equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        if (id == 0) {
+            queue_full(QUEUE_FULL_CALL_IN, sizeof(F));
+        }
+        return id;
     }
 
     /** Calls an event on the queue after a specified delay
@@ -900,6 +910,7 @@ public:
     {
         void *p = equeue_alloc(&_equeue, sizeof(F));
         if (!p) {
+	        queue_full(QUEUE_FULL_CALL_EVERY, sizeof(F));
             return 0;
         }
 
@@ -907,7 +918,11 @@ public:
         equeue_event_delay(e, ms);
         equeue_event_period(e, ms);
         equeue_event_dtor(e, &EventQueue::function_dtor<F>);
-        return equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        int id = equeue_post(&_equeue, &EventQueue::function_call<F>, e);
+        if (id == 0) {
+            queue_full(QUEUE_FULL_CALL_EVERY, sizeof(F));
+        }
+        return id;
     }
 
     /** Calls an event on the queue periodically
@@ -1239,6 +1254,18 @@ protected:
         ((F *)p)->~F();
     }
 
+    enum queue_full_call_type {
+        QUEUE_FULL_CALL,
+        QUEUE_FULL_CALL_IN,
+        QUEUE_FULL_CALL_EVERY,
+    };
+
+    /** Error callback. Called when task is rejected because queue is full */
+    virtual void queue_full(queue_full_call_type call_type, size_t function_size) const
+    {
+        // Can be overridden in subclass
+    }
+	
     // Context structures
     template <typename F, typename... ContextArgTs>
     struct context;
