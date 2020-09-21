@@ -38,6 +38,8 @@ struct timeval {
     time_t tv_sec;
     int32_t tv_usec;
 };
+#else
+#include <sys/time.h>
 #endif
 
 /** Implementation of the C time.h functions
