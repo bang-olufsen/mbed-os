@@ -46,6 +46,45 @@ extern "C" {
 #ifdef LWIP_PROVIDE_ERRNO
 #if LWIP_PROVIDE_ERRNO == 1
 
+// Both LWIP and system headers provide enum definitions, some of them with different values.
+// Choose the LWIP versions because LWIP has some extra ones.
+#undef EDEADLK
+#undef ENAMETOOLONG
+#undef ENOLCK
+#undef ENOSYS
+#undef ENOTEMPTY
+#undef ELOOP
+#undef ENOMSG
+#undef EIDRM
+#undef EMULTIHOP
+#undef EBADMSG
+#undef EOVERFLOW
+#undef EILSEQ
+#undef ENOTSOCK
+#undef EDESTADDRREQ
+#undef EMSGSIZE
+#undef EPROTOTYPE
+#undef ENOPROTOOPT
+#undef EPROTONOSUPPORT
+#undef EAFNOSUPPORT
+#undef EADDRINUSE
+#undef EADDRNOTAVAIL
+#undef ENETDOWN
+#undef ENETUNREACH
+#undef ENETRESET
+#undef ECONNABORTED
+#undef EISCONN
+#undef ENOTCONN
+#undef ETOOMANYREFS
+#undef ETIMEDOUT
+#undef EHOSTDOWN
+#undef EHOSTUNREACH
+#undef EALREADY
+#undef EINPROGRESS
+#undef ESTALE
+#undef EDQUOT
+
+
 #define  EPERM            1  /* Operation not permitted */
 #define  ENOENT           2  /* No such file or directory */
 #define  ESRCH            3  /* No such process */
