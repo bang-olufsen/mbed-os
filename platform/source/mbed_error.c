@@ -73,7 +73,7 @@ static bool is_reboot_error_valid = false;
 //we dont have many uses cases to create a C wrapper for MbedCRC and the data
 //we calculate CRC on in this context is very less we will use a local
 //implementation here.
-static unsigned int compute_crc32(const void *data, int datalen)
+__attribute__ ((unused)) static unsigned int compute_crc32(const void *data, int datalen)
 {
     const unsigned int polynomial = 0x04C11DB7; /* divisor is 32bit */
     unsigned int crc = 0; /* CRC value is 32bit */
@@ -200,7 +200,13 @@ static mbed_error_status_t handle_error(mbed_error_status_t error_status, unsign
 #if MBED_CONF_PLATFORM_ERROR_FILENAME_CAPTURE_ENABLED
     //Capture filename/linenumber if provided
     //Index for tracking error_filename
-    strncpy(current_error_ctx.error_filename, filename, MBED_CONF_PLATFORM_MAX_ERROR_FILENAME_LEN);
+    const char* copy_from = strrchr(filename, '/');
+    if (!copy_from) {
+        copy_from = filename;
+    } else {
+        ++copy_from; // Skip the '/'
+    }
+    strncpy(current_error_ctx.error_filename, copy_from, MBED_CONF_PLATFORM_MAX_ERROR_FILENAME_LEN);
     current_error_ctx.error_line_number = line_number;
 #endif
 
