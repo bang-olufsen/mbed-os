@@ -38,7 +38,7 @@ namespace internal {
 OsTimer *os_timer;
 
 namespace {
-uint64_t os_timer_data[(sizeof(OsTimer) + 7) / 8];
+[[maybe_unused]] uint64_t os_timer_data[(sizeof(OsTimer) + 7) / 8];
 }
 
 OsTimer *init_os_timer()
