@@ -148,6 +148,15 @@ void I2C::stop(void)
     unlock();
 }
 
+int I2C::recover(void)
+{
+    lock();
+    int ret = recover(_sda, _scl);
+    i2c_init(&_i2c, _sda, _scl);
+    unlock();
+    return ret;
+}
+
 void I2C::lock()
 {
     _mutex->lock();

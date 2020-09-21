@@ -25,7 +25,6 @@
 #include "hal/i2c_api.h"
 #include "platform/SingletonPtr.h"
 #include "platform/PlatformMutex.h"
-#include "platform/NonCopyable.h"
 
 #if DEVICE_I2C_ASYNCH
 #include "platform/CThunk.h"
@@ -79,7 +78,7 @@ namespace mbed {
  * }
  * @endcode
  */
-class I2C : private NonCopyable<I2C> {
+class I2C {
 
 public:
     enum RxStatus {
@@ -108,6 +107,10 @@ public:
     I2C(const i2c_pinmap_t &static_pinmap);
     I2C(const i2c_pinmap_t &&) = delete; // prevent passing of temporary objects
 
+    /** Create an I2C Master interface from an existing object
+     */
+    I2C(const I2C&) = default;
+	
     /** Set the frequency of the I2C interface
      *
      *  @param hz The bus frequency in hertz
@@ -176,6 +179,14 @@ public:
      */
     void stop(void);
 
+	/** Recover I2C bus, when stuck with SDA low
+     * 
+     *  @returns
+     *    '0' - Successfully recovered
+     *    'I2C_ERROR_BUS_BUSY' - In case of failure
+     */
+    int recover(void);
+	
     /** Acquire exclusive access to this I2C bus
      */
     virtual void lock(void);
