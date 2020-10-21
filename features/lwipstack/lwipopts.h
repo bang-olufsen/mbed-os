@@ -192,6 +192,7 @@
 #define LWIP_TCP                    0
 #endif
 
+
 #define LWIP_DNS                    1
 // Only DNS address storage is enabled
 #define LWIP_FULL_DNS               0
@@ -270,10 +271,14 @@
 
 // Interface type configuration
 
+#define LWIP_AUTOIP 1
+#define LWIP_DHCP_AUTOIP_COOP 0
+#define LWIP_FORCE_AUTOIP 1
+
 #if MBED_CONF_LWIP_ETHERNET_ENABLED
 #define LWIP_ARP                    1
 #define LWIP_ETHERNET               1
-#define LWIP_DHCP                   LWIP_IPV4
+#define LWIP_DHCP                   0
 #else
 #define LWIP_ARP                    0
 #define LWIP_ETHERNET               0

@@ -26,6 +26,7 @@
 
 #include "lwip/opt.h"
 #include "lwip/api.h"
+#include "lwip/autoip.h"
 #include "lwip/inet.h"
 #include "lwip/netif.h"
 #include "lwip/dhcp.h"
@@ -144,9 +145,13 @@ nsapi_error_t LWIP::Interface::set_dhcp()
 {
     netif_set_up(&netif);
 
-#if LWIP_DHCP
+#if LWIP_DHCP || LWIP_FORCE_AUTOIP
     if (dhcp_has_to_be_set) {
+    #if LWIP_FORCE_AUTOIP
+        err_t err = autoip_start(&netif);        
+    #else
         err_t err = dhcp_start(&netif);
+    #endif
         dhcp_has_to_be_set = false;
         if (err) {
             connected = NSAPI_STATUS_DISCONNECTED;
@@ -801,7 +806,7 @@ nsapi_error_t LWIP::Interface::bringup(bool dhcp, const char *ip, const char *ne
     connected = NSAPI_STATUS_CONNECTING;
     blocking = block;
 
-#if LWIP_DHCP
+#if LWIP_DHCP || LWIP_FORCE_AUTOIP
     if (stack != IPV6_STACK && dhcp) {
         dhcp_has_to_be_set = true;
     }
@@ -915,11 +920,15 @@ nsapi_error_t LWIP::Interface::bringdown()
         return NSAPI_ERROR_NO_CONNECTION;
     }
 
-#if LWIP_DHCP
+#if LWIP_DHCP || LWIP_FORCE_AUTOIP
     // Disconnect from the network
     if (dhcp_started) {
+        #if LWIP_FORCE_AUTOIP
+        autoip_stop(&netif);
+        #else
         dhcp_release(&netif);
         dhcp_stop(&netif);
+        #endif
         dhcp_started = false;
         dhcp_has_to_be_set = false;
     }
