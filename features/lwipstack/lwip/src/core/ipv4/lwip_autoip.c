@@ -390,9 +390,11 @@ autoip_tmr(void)
         autoip->lastconflict--;
       }
 
+      /*
       LWIP_DEBUGF(AUTOIP_DEBUG | LWIP_DBG_TRACE,
                   ("autoip_tmr() AutoIP-State: %"U16_F", ttw=%"U16_F"\n",
                    (u16_t)(autoip->state), autoip->ttw));
+      */
 
       if (autoip->ttw > 0) {
         autoip->ttw--;
