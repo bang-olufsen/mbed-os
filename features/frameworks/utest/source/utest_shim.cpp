@@ -45,7 +45,9 @@ static int32_t utest_us_ticker_init()
 }
 static void *utest_us_ticker_post(const utest_v1_harness_callback_t callback, timestamp_t delay_ms)
 {
-    UTEST_LOG_FUNCTION();
+    // B&O: Removed this log call because utest_us_ticker_post() may be called from a critical section, 
+    // but UTEST_LOG_FUNCTION calls new which takes a mutex which is forbidden in critical sections
+    //UTEST_LOG_FUNCTION(); 
     timestamp_t delay_us = delay_ms *1000;
 
     if (delay_ms) {
