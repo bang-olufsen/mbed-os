@@ -274,6 +274,8 @@
 #define LWIP_AUTOIP 1
 #define LWIP_DHCP_AUTOIP_COOP 0
 #define LWIP_FORCE_AUTOIP 1
+#define LWIP_AUTOIP_RAND(netif) LWIP_RAND()
+#define LWIP_AUTOIP_CREATE_SEED_ADDR(netif) lwip_htonl(AUTOIP_RANGE_START + (LWIP_RAND() & 0xffff))
 
 #if MBED_CONF_LWIP_ETHERNET_ENABLED
 #define LWIP_ARP                    1
