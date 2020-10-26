@@ -41,7 +41,11 @@ void test_emac_initialize()
 {
     worker_loop_init();
 
-    static NetworkInterface *network_interface = NetworkInterface::get_default_instance();
+    EMAC &emac = EMAC::get_default_instance();
+    EmacTestMemoryManager *memory_manager = &EmacTestMemoryManager::get_instance();
+    emac.set_memory_manager(*memory_manager);
+
+    MBED_ASSERT(emac_if_init(&emac));
 
 #define WIFI 2
 #if MBED_CONF_TARGET_NETWORK_DEFAULT_INTERFACE_TYPE == WIFI
@@ -64,9 +68,6 @@ void test_emac_initialize()
     }
 #endif
 #endif
-
-    // Power up the interface and emac driver
-    TEST_ASSERT_EQUAL_INT(NSAPI_ERROR_OK, network_interface->connect());
 
     worker_loop_link_up_wait();
 }
