@@ -184,12 +184,12 @@ public:
         return this;
     }
 
-protected:
     /** Provide access to the underlying stack
      *
      *  @return The underlying network stack
      */
     virtual NetworkStack *get_stack();
+protected:
 
     EMAC &_emac;
     OnboardNetworkStack &_stack;

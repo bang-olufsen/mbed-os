@@ -477,6 +477,10 @@ char *LWIP::Interface::get_gateway(char *buf, nsapi_size_t buflen)
 #endif
 }
 
+struct netif* LWIP::Interface::get_netif() {
+    return &netif;
+}
+
 LWIP::Interface::Interface() :
     hw(NULL), has_addr_state(0),
     connected(NSAPI_STATUS_DISCONNECTED),
@@ -792,6 +796,10 @@ void LWIP::set_default_interface(OnboardNetworkStack::Interface *interface)
         default_interface = static_cast<LWIP::Interface *>(interface);
         netif_set_default(&default_interface->netif);
     }
+}
+
+OnboardNetworkStack::Interface *LWIP::get_default_interface() {
+    return default_interface;
 }
 
 nsapi_error_t LWIP::Interface::bringup(bool dhcp, const char *ip, const char *netmask, const char *gw, const nsapi_ip_stack_t stack, bool block)
