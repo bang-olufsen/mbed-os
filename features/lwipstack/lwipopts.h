@@ -218,7 +218,7 @@
 #define LWIP_ND6_QUEUEING           0
 
 // Debug Options
-#define NETIF_DEBUG                 LWIP_DBG_ON
+#define NETIF_DEBUG                 LWIP_DBG_OFF
 #define PBUF_DEBUG                  LWIP_DBG_OFF
 #define API_LIB_DEBUG               LWIP_DBG_OFF
 #define API_MSG_DEBUG               LWIP_DBG_OFF
@@ -246,13 +246,12 @@
 #define TCPIP_DEBUG                 LWIP_DBG_OFF
 #define SLIP_DEBUG                  LWIP_DBG_OFF
 #define DHCP_DEBUG                  LWIP_DBG_OFF
-#define AUTOIP_DEBUG                LWIP_DBG_ON
+#define AUTOIP_DEBUG                LWIP_DBG_OFF
 #define DNS_DEBUG                   LWIP_DBG_OFF
 #define IP6_DEBUG                   LWIP_DBG_OFF
 
 #define ETHARP_DEBUG                LWIP_DBG_OFF
 #define UDP_LPC_EMAC                LWIP_DBG_OFF
-#define MDNS_DEBUG                  LWIP_DBG_ON
 
 #ifdef LWIP_DEBUG
 #define MEMP_OVERFLOW_CHECK         1
