@@ -140,11 +140,6 @@ public:
         MBED_DEPRECATED_SINCE("mbed-os-5.15", "String-based APIs are deprecated")
         virtual char *get_gateway(char *buf, nsapi_size_t buflen);
 
-        /** Returns the pointer to the netif instance
-         * @return Pointer to the netif instance
-         */
-        struct netif* get_netif();
-
     private:
         friend class LWIP;
 
@@ -342,8 +337,6 @@ public:
     /** Set the network interface as default one
       */
     virtual void set_default_interface(OnboardNetworkStack::Interface *interface);
-
-    OnboardNetworkStack::Interface *get_default_interface();
 
 protected:
     LWIP();
