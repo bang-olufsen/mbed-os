@@ -52,8 +52,6 @@
 #include "emac_tests.h"
 #include "emac_util.h"
 
-#include "dse13.h"
-
 using namespace utest::v1;
 
 // Test setup
@@ -86,11 +84,8 @@ Case cases[] = {
 
 Specification specification(test_setup, cases);
 
-int main()  
+int test_main()  
 {
-#ifdef BOARD_DSE13
-    init_dse13();
-#endif
     return !Harness::run(specification);
 }
 
