@@ -17,6 +17,7 @@
 #include "SPIFBlockDevice.h"
 #include "rtos/ThisThread.h"
 #include "mbed_critical.h"
+#include "mbed_wait_api.h"
 
 #include <string.h>
 #include <inttypes.h>
@@ -922,7 +923,7 @@ bool SPIFBlockDevice::_is_mem_ready()
     bool mem_ready = true;
 
     do {
-        rtos::ThisThread::sleep_for(1);
+        wait_us(1000);
         retries++;
         //Read the Status Register from device
         if (SPIF_BD_ERROR_OK != _spi_send_general_command(SPIF_RDSR, SPI_NO_ADDRESS_COMMAND, NULL, 0, status_value,
