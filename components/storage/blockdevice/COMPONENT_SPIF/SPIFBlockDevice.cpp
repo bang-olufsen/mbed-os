@@ -41,6 +41,8 @@ using namespace mbed;
 #define SPIF_STATUS_BIT_WIP 0x1 //Write In Progress
 #define SPIF_STATUS_BIT_WEL 0x2 // Write Enable Latch
 
+#define SPIF_FLAG_STATUS_BIT_WIP 0x80
+
 /* SFDP Header Parsing */
 /***********************/
 #define SPIF_SFDP_HEADER_SIZE 8
@@ -89,6 +91,7 @@ enum spif_default_instructions {
     SPIF_RDSR = 0x05, // Read Status Register
     SPIF_WREN = 0x06, // Write Enable
     SPIF_RSTEN = 0x66, // Reset Enable
+    SPIF_RDFSR = 0x70, // Read Flag Status Register
     SPIF_RST = 0x99, // Reset
     SPIF_RDID = 0x9f, // Read Manufacturer and JDEC Device ID
     SPIF_ULBPR = 0x98, // Clears all write-protection bits in the Block-Protection register,
@@ -109,7 +112,8 @@ static unsigned int local_math_power(int base, int exp);
 SPIFBlockDevice::SPIFBlockDevice(
     PinName mosi, PinName miso, PinName sclk, PinName csel, int freq)
     : _spi(mosi, miso, sclk), _cs(csel), _read_instruction(0), _prog_instruction(0), _erase_instruction(0),
-      _erase4k_inst(0), _page_size_bytes(0), _device_size_bytes(0), _init_ref_count(0), _is_initialized(false)
+      _erase4k_inst(0), _page_size_bytes(0), _device_size_bytes(0), _init_ref_count(0), _is_initialized(false),
+      _use_flag_status(false)
 {
     _address_size = SPIF_ADDR_SIZE_3_BYTES;
     // Initial SFDP read tables are read with 8 dummy cycles
@@ -141,6 +145,7 @@ int SPIFBlockDevice::init()
     spif_bd_error spi_status = SPIF_BD_ERROR_OK;
 
     _mutex->lock();
+    _use_flag_status = false;
 
     if (!_is_initialized) {
         _init_ref_count = 0;
@@ -492,6 +497,11 @@ int SPIFBlockDevice::get_erase_value() const
 const char *SPIFBlockDevice::get_type() const
 {
     return "SPIF";
+}
+
+void SPIFBlockDevice::use_flag_status()
+{
+    _use_flag_status = true;
 }
 
 /***************************************************/
@@ -921,18 +931,21 @@ bool SPIFBlockDevice::_is_mem_ready()
     char status_value[2];
     int retries = 0;
     bool mem_ready = true;
+    int command = _use_flag_status ? SPIF_RDFSR : SPIF_RDSR;
+    uint8_t status_mask = _use_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : SPIF_STATUS_BIT_WIP;
+    uint8_t status = _use_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : 0;
 
     do {
         wait_us(1000);
         retries++;
         //Read the Status Register from device
-        if (SPIF_BD_ERROR_OK != _spi_send_general_command(SPIF_RDSR, SPI_NO_ADDRESS_COMMAND, NULL, 0, status_value,
+        if (SPIF_BD_ERROR_OK != _spi_send_general_command(command, SPI_NO_ADDRESS_COMMAND, NULL, 0, status_value,
                                                           1)) {   // store received values in status_value
             tr_error("Reading Status Register failed");
         }
-    } while ((status_value[0] & SPIF_STATUS_BIT_WIP) != 0 && retries < IS_MEM_READY_MAX_RETRIES);
+    } while ((status_value[0] & status_mask) != status && retries < IS_MEM_READY_MAX_RETRIES);
 
-    if ((status_value[0] & SPIF_STATUS_BIT_WIP) != 0) {
+    if ((status_value[0] & status_mask) != status) {
         tr_error("_is_mem_ready FALSE");
         mem_ready = false;
     }

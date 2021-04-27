@@ -195,6 +195,9 @@ public:
      */
     virtual const char *get_type() const;
 
+    /** Use flag status register instead of regular status register (Micron N25Q512A). */
+    void use_flag_status();
+
 private:
 
     // Internal functions
