@@ -112,9 +112,9 @@ static unsigned int local_math_power(int base, int exp);
 SPIFBlockDevice::SPIFBlockDevice(
     PinName mosi, PinName miso, PinName sclk, PinName csel, int freq)
     : _spi(mosi, miso, sclk), _cs(csel), _read_instruction(0), _prog_instruction(0), _erase_instruction(0),
-      _erase4k_inst(0), _page_size_bytes(0), _device_size_bytes(0), _init_ref_count(0), _is_initialized(false)
+      _erase4k_inst(0), _page_size_bytes(0), _device_size_bytes(0), _init_ref_count(0), _is_initialized(false),
+      _enable_flag_status(false)
 {
-    _address_size = SPIF_ADDR_SIZE_3_BYTES;
     // Initial SFDP read tables are read with 8 dummy cycles
     // Default Bus Setup 1_1_1 with 0 dummy and mode cycles
     _read_dummy_and_mode_cycles = 8;
@@ -144,7 +144,7 @@ int SPIFBlockDevice::init()
     spif_bd_error spi_status = SPIF_BD_ERROR_OK;
 
     _mutex->lock();
-    _use_flag_status = false;
+    _address_size = SPIF_ADDR_SIZE_3_BYTES;
 
     if (!_is_initialized) {
         _init_ref_count = 0;
@@ -498,9 +498,9 @@ const char *SPIFBlockDevice::get_type() const
     return "SPIF";
 }
 
-void SPIFBlockDevice::use_flag_status()
+void SPIFBlockDevice::enable_flag_status(bool enable)
 {
-    _use_flag_status = true;
+    _enable_flag_status = enable;
 }
 
 /***************************************************/
@@ -930,9 +930,9 @@ bool SPIFBlockDevice::_is_mem_ready()
     char status_value[2];
     int retries = 0;
     bool mem_ready = true;
-    int command = _use_flag_status ? SPIF_RDFSR : SPIF_RDSR;
-    uint8_t status_mask = _use_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : SPIF_STATUS_BIT_WIP;
-    uint8_t status = _use_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : 0;
+    int command = _enable_flag_status ? SPIF_RDFSR : SPIF_RDSR;
+    uint8_t status_mask = _enable_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : SPIF_STATUS_BIT_WIP;
+    uint8_t status = _enable_flag_status ? SPIF_FLAG_STATUS_BIT_WIP : 0;
 
     do {
         wait_us(1000);

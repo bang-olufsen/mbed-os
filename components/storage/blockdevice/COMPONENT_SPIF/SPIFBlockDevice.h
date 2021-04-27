@@ -195,8 +195,11 @@ public:
      */
     virtual const char *get_type() const;
 
-    /** Use flag status register instead of regular status register (Micron N25Q512A). */
-    void use_flag_status();
+    /** Enable flag status register instead of regular status register (Micron N25Q512A).
+     *
+     *  @param enable    A bool which enables or disables the flag status register 
+     */
+    void enable_flag_status(bool enable);
 
 private:
 
@@ -304,7 +307,7 @@ private:
     unsigned int _dummy_and_mode_cycles; // Number of Dummy and Mode Bits required by Current Bus Mode
     uint32_t _init_ref_count;
     bool _is_initialized;
-    bool _use_flag_status;
+    bool _enable_flag_status;
 };
 
 #endif  /* MBED_SPIF_BLOCK_DEVICE_H */
