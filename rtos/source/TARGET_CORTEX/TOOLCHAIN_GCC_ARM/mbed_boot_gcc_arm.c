@@ -46,7 +46,15 @@ void software_init_hook(void)
     mbed_stack_isr_start = (unsigned char *) &__StackLimit;
     mbed_stack_isr_size = (uint32_t) &__StackTop - (uint32_t) &__StackLimit;
     mbed_heap_start = (unsigned char *) &__end__;
+#if defined(MBED_SPLIT_HEAP)
+    extern uint32_t __mbed_sbrk_start;
+    extern uint32_t __mbed_krbs_start;
+    extern uint32_t __mbed_sbrk_start_0;
+    extern uint32_t __mbed_krbs_start_0;
+    mbed_heap_size = ((uint32_t)&__mbed_krbs_start_0 - (uint32_t)&__mbed_sbrk_start_0) + ((uint32_t)&__mbed_krbs_start - (uint32_t)&__mbed_sbrk_start);
+#else
     mbed_heap_size = (uint32_t) &__HeapLimit - (uint32_t) &__end__;
+#endif
 
     mbed_init();
     mbed_rtos_start();
