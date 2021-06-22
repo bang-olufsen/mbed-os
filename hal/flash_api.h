@@ -118,6 +118,21 @@ uint32_t flash_get_start_address(const flash_t *obj);
  */
 uint32_t flash_get_size(const flash_t *obj);
 
+/** Get the active flash bank
+ *
+ * @param obj The flash object
+ * @return 0 or 1 for success, -1 for error
+ */
+int32_t flash_get_bank(const flash_t *obj);
+
+/** Set the active flash bank
+ *
+ * @param obj The flash object
+ * @param bank The flash bank to be set
+ * @return 0 success, -1 for error
+ */
+int32_t flash_set_bank(const flash_t *obj, uint8_t bank);
+
 /** Get the flash erase value
  *
  * @param obj The flash object

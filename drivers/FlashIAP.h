@@ -135,6 +135,19 @@ public:
      */
     uint32_t get_flash_size() const;
 
+    /** Get the active flash bank
+     *
+     *  @return 0 or 1 on success, negative error code on failure
+     */
+    int get_flash_bank() const;
+
+    /** Set the active flash bank
+     *
+     *  @param bank Bank to be set
+     *  @return 0 on success, negative error code on failure
+     */
+    int set_flash_bank(uint8_t bank);
+
     /** Get the program page size
      *
      *  The page size defines the writable page size

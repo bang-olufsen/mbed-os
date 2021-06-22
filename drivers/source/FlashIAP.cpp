@@ -227,6 +227,16 @@ uint32_t FlashIAP::get_flash_size() const
     return flash_get_size(&_flash);
 }
 
+int FlashIAP::get_flash_bank() const
+{
+    return flash_get_bank(&_flash);
+}
+
+int FlashIAP::set_flash_bank(uint8_t bank)
+{
+    return flash_set_bank(&_flash, bank);
+}
+
 uint8_t FlashIAP::get_erase_value() const
 {
     return flash_get_erase_value(&_flash);
