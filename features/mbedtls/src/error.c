@@ -19,6 +19,8 @@
  *  This file is part of mbed TLS (https://tls.mbed.org)
  */
 
+#include <string.h>
+
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
 #else
